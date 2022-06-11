@@ -10,14 +10,24 @@ use Illuminate\Support\Facades\Log;
 
 class StudentController extends Controller
 {
-    /**
+   /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function globalSearch($string)
+    {        
+        Log::info('Showing the search results for students: '.$string);
+        //all column names for dynamically exract in query
+        $field = ['name','id','phone_number', 'email', 'country', 'country_code'];
+        
+        $name = Student::Where(function ($query) use($string, $field) {
+             for ($i = 0; $i < count($field); $i++){
+                $query->orwhere($field[$i], 'like',  '%' . $string .'%');
+             }      
+        })->paginate(10); //response with pagination
+
+        return $this->sendResponse($name, 'Students successfully Retrieved...!');
     }
 
     /**
@@ -38,16 +48,32 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //countryByCode method is called from helper class
+        $contry = countryByCode($request->country_code);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|between:2,100',
+            'phone_number' => 'required|numeric',
+            'email' => 'required|string|email|max:100|unique:users',
+            'country_code' => 'required|numeric',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError($validator->errors(), '', 400);       
+        }
+    
+        $student = Student::create(array_merge($request->all(), ['country' => $contry[0]['name']]));
+
+        return $this->sendResponse($student, 'Student added successfully...!');        
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Student  $student
+     * @param  \App\Models\Students  $students
      * @return \Illuminate\Http\Response
      */
-    public function show(Student $student)
+    public function show(Students $students)
     {
         //
     }
@@ -55,10 +81,10 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Student  $student
+     * @param  \App\Models\Students  $students
      * @return \Illuminate\Http\Response
      */
-    public function edit(Student $student)
+    public function edit(Students $students)
     {
         //
     }
@@ -67,10 +93,10 @@ class StudentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Student  $student
+     * @param  \App\Models\Students  $students
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request, Students $students)
     {
         //
     }
@@ -78,10 +104,10 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Student  $student
+     * @param  \App\Models\Students  $students
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
+    public function destroy(Students $students)
     {
         //
     }

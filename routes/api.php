@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,8 @@ Route::post('/login', [UserAuthController::class, 'login']);
 
 
 Route::group(['middleware' => 'api'], function ($router) {
-    Route::get('/student', [LandingPageController::class, 'index']);   
+    Route::get('/students/{string}', [StudentController::class, 'globalSearch']);    
+    Route::post('/student', [StudentController::class, 'store']);    
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
