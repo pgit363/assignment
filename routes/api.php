@@ -20,7 +20,7 @@ Route::post('/register', [UserAuthController::class, 'register']);
 Route::post('/login', [UserAuthController::class, 'login']);
 
 
-Route::group(['middleware' => 'api'], function ($router) {
+Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::get('/students/{string}', [StudentController::class, 'globalSearch']);    
     Route::post('/student', [StudentController::class, 'store']);    
 });
