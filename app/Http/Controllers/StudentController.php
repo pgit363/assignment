@@ -27,6 +27,7 @@ class StudentController extends Controller
              }      
         })->paginate(10); //response with pagination
 
+        Log::info("data fetched");
         return $this->sendResponse($name, 'Students successfully Retrieved...!');
     }
 
@@ -48,9 +49,10 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info("inside store method");
         //countryByCode method is called from helper class
         $contry = countryByCode($request->country_code);
-
+        Log::info("Country name ". $contry[0]['name']." by code ".$request->country_code);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'phone_number' => 'required|numeric',
@@ -63,7 +65,7 @@ class StudentController extends Controller
         }
     
         $student = Student::create(array_merge($request->all(), ['country' => $contry[0]['name']]));
-
+        Log::info("data added successfully");
         return $this->sendResponse($student, 'Student added successfully...!');        
     }
 
