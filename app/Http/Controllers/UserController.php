@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
-class ProductController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,12 +19,12 @@ class ProductController extends Controller
     public function index()
     {
         Log::info("to show all data");
-        $products = Product::latest()->paginate(5);
+        $users = User::latest()->paginate(5);
     
-        return view('products.index',compact('products'))
+        return view('pk.index',compact('users'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
-   
+
     /**
      * Show the form for creating a new resource.
      *
@@ -31,9 +32,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        return view('pk.create');
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -45,8 +46,9 @@ class ProductController extends Controller
         Log::info("to store data");
 
         $request->validate([
-            'name' => 'required',
-            'detail' => 'required',
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
   
@@ -54,93 +56,104 @@ class ProductController extends Controller
         
         Log::info("upload file");
         if ($image = $request->file('image')) {
-            $destinationPath = 'image/';
+            $destinationPath = 'users/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['image'] = "$destinationPath$profileImage";
         }
         Log::info("file uploaded successfully");
 
-        Product::create($input);
+        User::create($input);
         Log::info("data added");
 
-        return redirect()->route('products.index')
-                        ->with('success','Product created successfully.');
+        return redirect()->route('pk.index')
+                        ->with('success','Uer created successfully.');
     }
-     
+
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        return view('products.show',compact('product'));
+        $user = User::where('id', $id)->first();
+        return view('pk.show',compact('user'));
     }
-     
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        return view('products.edit',compact('product'));
+        $user = User::where('id', $id)->first();
+        return view('pk.edit',compact('user'));
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, User $user)
     {
+        $user = Auth::user();
+        // $user->name=$request->input('name');
+        // $user->email=$request->input('email');
+
         $request->validate([
-            'name' => 'required',
-            'detail' => 'required'
+            'name' => 'string',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
   
         $input = $request->all();
+        // var_dump($input);exit;
+
   
         if ($image = $request->file('image')) {
-            $destinationPath = 'image/';
+            $destinationPath = 'users/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['image'] = "$profileImage";
         }else{
             unset($input['image']);
         }
+        // var_dump($input);exit;
           
-        $product->update($input);
+        $user->update($input);
+        // var_dump($user);exit;
     
-        return redirect()->route('products.index')
-                        ->with('success','Product updated successfully');
+        return redirect()->route('pk.index')
+                        ->with('success','User updated successfully');
     }
-  
+
+   
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Product  $product
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(User $user)
     {
         Log::info("to remove file with data");
 
-        $image_path = public_path("{$product->image}");
+        $image_path = public_path("{$user->image}");
         if (File::exists($image_path)) {
             File::delete($image_path);
         }
         Log::info("file removed");
 
-        $product->delete();
+        $user->delete();
         Log::info("data deleted");
 
-        return redirect()->route('products.index')
-                        ->with('success','Product deleted successfully');
+        return redirect()->route('pk.index')
+                        ->with('success','user deleted successfully');
     }
 }
