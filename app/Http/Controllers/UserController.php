@@ -60,8 +60,8 @@ class UserController extends Controller
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['image'] = "$destinationPath$profileImage";
+            Log::info("FILE STORED");
         }
-        Log::info("file uploaded successfully");
 
         User::create($input);
         Log::info("data added");
@@ -101,11 +101,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        // $user->name=$request->input('name');
-        // $user->email=$request->input('email');
+        Log::info("to update data");
 
         $request->validate([
             'name' => 'string',
@@ -113,21 +111,22 @@ class UserController extends Controller
         ]);
   
         $input = $request->all();
-        // var_dump($input);exit;
 
-  
         if ($image = $request->file('image')) {
             $destinationPath = 'users/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
-            $input['image'] = "$profileImage";
+            $input['image'] = "$destinationPath$profileImage";
+            Log::info("image updated");
         }else{
             unset($input['image']);
         }
-        // var_dump($input);exit;
-          
-        $user->update($input);
-        // var_dump($user);exit;
+
+        unset($input['_token']);
+        unset($input['_method']);
+        Log::info("removed token and method");
+
+        User::where('id', $id)->update($input);
     
         return redirect()->route('pk.index')
                         ->with('success','User updated successfully');
@@ -140,9 +139,11 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        Log::info("to remove file with data");
+        $user = User::where('id', $id)->first();
+
+        Log::info("to remove file with data".$user);
 
         $image_path = public_path("{$user->image}");
         if (File::exists($image_path)) {
@@ -150,7 +151,8 @@ class UserController extends Controller
         }
         Log::info("file removed");
 
-        $user->delete();
+        User::destroy($user->id);
+        
         Log::info("data deleted");
 
         return redirect()->route('pk.index')
