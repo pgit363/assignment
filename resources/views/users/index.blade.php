@@ -1,4 +1,4 @@
-@extends('pk.layout')
+@extends('users.layout')
      
 @section('content')
     <div class="row">
@@ -7,7 +7,7 @@
                 <h2>Users Dashboard</h2>
             </div>
             <div class="pull-right">
-                <a class="btn btn-success" href="{{ route('pk.create') }}"> Create New user</a>
+                <a class="btn btn-success" href="{{ route('users.create') }}"> Create New user</a>
             </div>
         </div>
     </div>
@@ -33,11 +33,11 @@
             <td>{{ $user->name }}</td>
             <td>{{ $user->detail }}</td>
             <td>
-                <form action="{{ route('pk.destroy',$user->id) }}" method="POST">
+                <form action="{{ route('users.destroy',$user->id) }}" method="POST">
      
-                    <a class="btn btn-info" href="{{ route('pk.show',$user->id) }}">Show</a>
+                    <a class="btn btn-info" href="{{ route('users.show',$user->id) }}">Show</a>
       
-                    <a class="btn btn-primary" href="{{ route('pk.edit',$user->id) }}">Edit</a>
+                    <a class="btn btn-primary" href="{{ route('users.edit',$user->id) }}">Edit</a>
      
                     @csrf
                     @method('DELETE')

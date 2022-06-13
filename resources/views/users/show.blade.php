@@ -1,4 +1,4 @@
-@extends('pk.layout')
+@extends('users.layout')
    
 @section('content')
     <div class="row">
@@ -7,7 +7,7 @@
                 <h2> Show user</h2>
             </div>
             <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('pk.index') }}"> Back</a>
+                <a class="btn btn-primary" href="{{ route('users.index') }}"> Back</a>
             </div>
         </div>
     </div>

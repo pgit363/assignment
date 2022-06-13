@@ -21,7 +21,7 @@ class UserController extends Controller
         Log::info("to show all data");
         $users = User::latest()->paginate(5);
     
-        return view('pk.index',compact('users'))
+        return view('users.index',compact('users'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('pk.create');
+        return view('users.create');
     }
 
     /**
@@ -56,7 +56,7 @@ class UserController extends Controller
         
         Log::info("upload file");
         if ($image = $request->file('image')) {
-            $destinationPath = 'users/';
+            $destinationPath = 'image/users/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['image'] = "$destinationPath$profileImage";
@@ -66,7 +66,7 @@ class UserController extends Controller
         User::create($input);
         Log::info("data added");
 
-        return redirect()->route('pk.index')
+        return redirect()->route('users.index')
                         ->with('success','Uer created successfully.');
     }
 
@@ -79,7 +79,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::where('id', $id)->first();
-        return view('pk.show',compact('user'));
+        return view('users.show',compact('user'));
     }
 
     /**
@@ -91,7 +91,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::where('id', $id)->first();
-        return view('pk.edit',compact('user'));
+        return view('users.edit',compact('user'));
     }
 
     /**
@@ -113,7 +113,7 @@ class UserController extends Controller
         $input = $request->all();
 
         if ($image = $request->file('image')) {
-            $destinationPath = 'users/';
+            $destinationPath = 'image/users/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['image'] = "$destinationPath$profileImage";
@@ -128,7 +128,7 @@ class UserController extends Controller
 
         User::where('id', $id)->update($input);
     
-        return redirect()->route('pk.index')
+        return redirect()->route('users.index')
                         ->with('success','User updated successfully');
     }
 
@@ -155,7 +155,7 @@ class UserController extends Controller
         
         Log::info("data deleted");
 
-        return redirect()->route('pk.index')
+        return redirect()->route('users.index')
                         ->with('success','user deleted successfully');
     }
 }

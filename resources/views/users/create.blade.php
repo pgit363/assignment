@@ -1,4 +1,4 @@
-@extends('pk.layout')
+@extends('users.layout')
   
 @section('content')
 <div class="row">
@@ -7,7 +7,7 @@
             <h2>Add New User</h2>
         </div>
         <div class="pull-right">
-            <a class="btn btn-primary" href="{{ route('pk.index') }}"> Back</a>
+            <a class="btn btn-primary" href="{{ route('users.index') }}"> Back</a>
         </div>
     </div>
 </div>
@@ -23,7 +23,7 @@
     </div>
 @endif
      
-<form action="{{ route('pk.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     
      <div class="row">

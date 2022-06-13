@@ -25,6 +25,6 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::post('/student', [StudentController::class, 'store']);    
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
